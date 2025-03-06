@@ -91,13 +91,13 @@ stages {
                     steps {
                         script {
                         sh '''
+                        sudo su
                         rm -Rf .kube
                         mkdir .kube
                         ls
                         cat $KUBECONFIG
                         cat $KUBECONFIG > .kube/config
                         cp charts/values.yaml values.yml
-                        cat values.yml
                         sed -i "s/tag:.*movieService.*$/tag: ${DOCKER_TAG}/g" values.yml
                         sed -i "s/tag:.*castService.*$/tag: ${DOCKER_TAG}/g" values.yml
                         kubectl get namespace dev || kubectl create namespace dev
