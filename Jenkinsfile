@@ -32,16 +32,16 @@ stages {
                 }
             }
 
-        stage('Test'){ // we launch the curl command to validate that the container responds to the request
+        stage('Test'){ 
             steps {
                 script {
                     
                     def response = sh(script: '''
                         
-                        curl -X 'POST' 'http://localhost:8081/api/v1/casts/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "Leonardo", "nationality": "Amerloc"}'
+                        curl -X 'POST' 'http://localhost:8081/api/v1/casts/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "testacteur", "nationality": "test"}'
 
                         
-                        curl -X 'POST' 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "test movie", "plot": "test", "genres": ["test genre"], "casts_id": [1]}'
+                        curl -X 'POST' 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "test movie pipeline", "plot": "test", "genres": ["test genre"], "casts_id": [1]}'
 
                         
                         movies_response=$(curl -s 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json')
@@ -57,6 +57,9 @@ stages {
                     } else {
                         error "Test failed: Movie not found in the response."
                     }
+
+                    sh 'sleep 5'
+                    sh 'docker-compose down'
                 }
             }
 
