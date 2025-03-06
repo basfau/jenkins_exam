@@ -83,28 +83,31 @@ stages {
 
         }
 
-//         stage('Deploiement en dev'){
-//                 environment
-//                 {
-//                 KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
-//                 }
-//                     steps {
-//                         script {
-//                         sh '''
-//                         rm -Rf .kube
-//                         mkdir .kube
-//                         ls
-//                         cat $KUBECONFIG > .kube/config
-//                         cat $KUBECONFIG
-//                         cp fastapi/values.yaml values.yml
-//                         cat values.yml
-//                         sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-//                         helm upgrade --install app fastapi --values=values.yml --namespace dev
-//                         '''
-//                         }
-//                     }
+        stage('Deploiement en dev'){
+                environment
+                {
+                KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
+                }
+                    steps {
+                        script {
+                        sh '''
+                        rm -Rf .kube
+                        mkdir .kube
+                        ls
+                        cat $KUBECONFIG > .kube/config
+                        cat $KUBECONFIG
+                        cp charts/values.yaml values.yml
+                        cat values.yml
+                        sed -i "s/tag:.*movieService.*$/tag: ${DOCKER_TAG}/g" values.yml
+                        sed -i "s/tag:.*castService.*$/tag: ${DOCKER_TAG}/g" values.yml
+                        kubectl get namespace dev || kubectl create namespace dev
+                        cd charts || exit 1
+                        helm upgrade --install exam-jenkins --values=values.yml --namespace dev
+                        '''
+                        }
+                    }
 
-//                 }
+                }
 //         stage('Deploiement en staging'){
 //                 environment
 //                 {

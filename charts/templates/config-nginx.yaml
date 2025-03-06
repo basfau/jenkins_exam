@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configmap
+data:
+  default.conf: |
+    # Ton fichier de configuration Nginx ici, par exemple
+    server {
+      listen 80;
+      server_name localhost;
+      
+      location / {
+        proxy_pass http://movie-service:8000;
+      }
+    }
