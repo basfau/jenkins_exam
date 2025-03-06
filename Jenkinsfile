@@ -96,7 +96,7 @@ stages {
                         ls
                         cat $KUBECONFIG > .kube/config
                         cp ./charts/values.yaml values.yml
-                        sed -i "s|tag: \"latest\"|tag: \"${DOCKER_TAG}\"|g" values.yml
+                        sed -i 's/tag: "latest"/tag: "${DOCKER_TAG}"/g' values.yml
                         cat values.yml
                         kubectl get namespace dev || kubectl create namespace dev
                         helm upgrade --install exam-jenkins ./charts --values=values.yml --namespace dev --recreate-pods
