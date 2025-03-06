@@ -5,10 +5,10 @@ replicaCount: 1
 image:
   movieService:
     repository: "bastienfaucher/movie_service"
-    tag: "latest"
+    tag: latest
   castService:
     repository: "bastienfaucher/cast_service"
-    tag: "latest"
+    tag: latest
   nginx:
     repository: "nginx"
 
