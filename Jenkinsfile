@@ -94,14 +94,12 @@ stages {
                         rm -Rf .kube
                         mkdir .kube
                         ls
-                        cat ${KUBECONFIG}
-                        cat ${KUBECONFIG} > .kube/config
+                        cat $KUBECONFIG > .kube/config
                         cp charts/values.yaml values.yml
                         sed -i "s/tag:.*movieService.*$/tag: ${DOCKER_TAG}/g" values.yml
                         sed -i "s/tag:.*castService.*$/tag: ${DOCKER_TAG}/g" values.yml
                         kubectl get namespace dev || kubectl create namespace dev
-                        cd charts || exit 1
-                        helm upgrade --install exam-jenkins --values=values.yml --namespace dev
+                        helm upgrade --install exam-jenkins ./charts --values=values.yml --namespace dev
                         '''
                         }
                     }
