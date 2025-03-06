@@ -26,7 +26,7 @@ stages {
                     script {
                     sh '''
                     docker-compose up -d
-                    sleep 10
+                    sleep 20
                     '''
                     }
                 }
@@ -34,23 +34,45 @@ stages {
 
         stage('Test'){ // we launch the curl command to validate that the container responds to the request
             steps {
-                script {
-                    def responses = sh(script: '''
-                        cast_response=$(curl -X 'POST' 'http://localhost:8081/api/v1/casts/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "Leonardo", "nationality": "Amerloc"}' -w "%{http_code}" -o /dev/null)
-                        movie_response=$(curl -X 'POST' 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "movie test", "plot": "c\'est un test d\'api", "genres": ["test"], "casts_id": [1]}' -w "%{http_code}" -o /dev/null)
-                        echo "Cast Response: $cast_response, Movie Response: $movie_response"
-                        echo "$cast_response $movie_response"
-                    ''', returnStdout: true).trim()
+        script {
+            def cast_response = sh(script: '''
+                curl -X 'POST' \
+                    'http://localhost:8081/api/v1/casts/' \
+                    -H 'accept: application/json' \
+                    -H 'Content-Type: application/json' \
+                    -d '{
+                    "name": "Leonardo",
+                    "nationality": "Amerloc"
+                    }' \
+                    -w "%{http_code}" -o /dev/null
+            ''', returnStdout: true).trim()
 
-                    def (cast_response, movie_response) = responses.split()
+            def movie_response = sh(script: '''
+                curl -X 'POST' \
+                    'http://localhost:8081/api/v1/movies/' \
+                    -H 'accept: application/json' \
+                    -H 'Content-Type: application/json' \
+                    -d '{
+                    "name": "movie test",
+                    "plot": "c'\''est un test d'\''api",
+                    "genres": [
+                        "test"
+                    ],
+                    "casts_id": [
+                        1
+                    ]
+                    }' \
+                    -w "%{http_code}" -o /dev/null
+            ''', returnStdout: true).trim()
 
-                    if (cast_response == '201' && movie_response == '201') {
-                        echo "Test successful: Both cast and movie created successfully with status 201."
-                    } else {
-                        error "Test failed: One or both requests did not return status 201. Cast response: ${cast_response}, Movie response: ${movie_response}"
-                    }
-                    }
-                }
+            
+            if (cast_response == '201' && movie_response == '201') {
+                echo "Test successful: Both cast and movie created successfully with status 201."
+            } else {
+                error "Test failed: One or both requests did not return status 201. Cast response: ${cast_response}, Movie response: ${movie_response}"
+            }
+        }
+    }
 
         }
         stage('Docker Push'){ //we pass the built image to our docker hub account
