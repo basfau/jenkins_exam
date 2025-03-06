@@ -14,8 +14,8 @@ stages {
                  docker rm -f jenkins
                  docker-compose down
                  docker-compose build
-                 docker tag movie_service:latest $DOCKER_ID/$MOVIE_SERVICE_IMAGE:$DOCKER_TAG
-                 docker tag cast_service:latest $DOCKER_ID/$CAST_SERVICE_IMAGE:$DOCKER_TAG
+                 docker tag examjenkins_movie_service:latest $DOCKER_ID/$MOVIE_SERVICE_IMAGE:$DOCKER_TAG
+                 docker tag examjenkins_cast_service:latest $DOCKER_ID/$CAST_SERVICE_IMAGE:$DOCKER_TAG
                 sleep 6
                 '''
                 }
