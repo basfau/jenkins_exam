@@ -11,6 +11,12 @@ image:
     tag: latest
   nginx:
     repository: "nginx"
+  postgresMovie:
+    repository: "postgres"
+    tag: "12.1-alpine"
+  postgresCast:
+    repository: "postgres"
+    tag: "12.1-alpine"
 
 # Variables d'environnement pour movie_service et cast_service
 env:
@@ -32,15 +38,8 @@ service:
     port: 8081
     targetPort: 8080
 
-# Configuration des bases de données
-postgres:
+persistence:
   movieDb:
-    image: "postgres:12.1-alpine"
-    dbName: "movie_db_dev"
-    dbUser: "movie_db_username"
-    dbPassword: "movie_db_password"
+    size: 1Gi
   castDb:
-    image: "postgres:12.1-alpine"
-    dbName: "cast_db_dev"
-    dbUser: "cast_db_username"
-    dbPassword: "cast_db_password"
+    size: 1Gi
