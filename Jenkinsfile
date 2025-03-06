@@ -94,6 +94,7 @@ stages {
                         rm -Rf .kube
                         mkdir .kube
                         ls
+                        cat $KUBECONFIG
                         cat $KUBECONFIG > .kube/config
                         cp charts/values.yaml values.yml
                         cat values.yml
