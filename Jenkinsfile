@@ -95,7 +95,6 @@ stages {
                         mkdir .kube
                         ls
                         cat $KUBECONFIG > .kube/config
-                        cat $KUBECONFIG
                         cp charts/values.yaml values.yml
                         cat values.yml
                         sed -i "s/tag:.*movieService.*$/tag: ${DOCKER_TAG}/g" values.yml
