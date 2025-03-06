@@ -94,8 +94,8 @@ stages {
                         rm -Rf .kube
                         mkdir .kube
                         ls
-                        sudo cat $KUBECONFIG
-                        sudo cat $KUBECONFIG > .kube/config
+                        cat ${KUBECONFIG}
+                        cat ${KUBECONFIG} > .kube/config
                         cp charts/values.yaml values.yml
                         sed -i "s/tag:.*movieService.*$/tag: ${DOCKER_TAG}/g" values.yml
                         sed -i "s/tag:.*castService.*$/tag: ${DOCKER_TAG}/g" values.yml
