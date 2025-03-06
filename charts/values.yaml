@@ -11,7 +11,6 @@ image:
     tag: "latest"
   nginx:
     repository: "nginx"
-    tag: "latest"
 
 # Variables d'environnement pour movie_service et cast_service
 env:
