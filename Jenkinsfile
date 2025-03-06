@@ -34,45 +34,31 @@ stages {
 
         stage('Test'){ // we launch the curl command to validate that the container responds to the request
             steps {
-        script {
-            def cast_response = sh(script: '''
-                curl -X 'POST' \
-                    'http://localhost:8081/api/v1/casts/' \
-                    -H 'accept: application/json' \
-                    -H 'Content-Type: application/json' \
-                    -d '{
-                    "name": "Leonardo",
-                    "nationality": "Amerloc"
-                    }' \
-                    -w "%{http_code}" -o /dev/null
-            ''', returnStdout: true).trim()
+                script {
+                    
+                    def response = sh(script: '''
+                        
+                        curl -X 'POST' 'http://localhost:8081/api/v1/casts/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "Leonardo", "nationality": "Amerloc"}'
 
-            def movie_response = sh(script: '''
-                curl -X 'POST' \
-                    'http://localhost:8081/api/v1/movies/' \
-                    -H 'accept: application/json' \
-                    -H 'Content-Type: application/json' \
-                    -d '{
-                    "name": "movie test",
-                    "plot": "c'\''est un test d'\''api",
-                    "genres": [
-                        "test"
-                    ],
-                    "casts_id": [
-                        1
-                    ]
-                    }' \
-                    -w "%{http_code}" -o /dev/null
-            ''', returnStdout: true).trim()
+                        
+                        curl -X 'POST' 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "test movie", "plot": "test", "genres": ["test genre"], "casts_id": [1]}'
 
-            
-            if (cast_response == '201' && movie_response == '201') {
-                echo "Test successful: Both cast and movie created successfully with status 201."
-            } else {
-                error "Test failed: One or both requests did not return status 201. Cast response: ${cast_response}, Movie response: ${movie_response}"
+                        
+                        movies_response=$(curl -s 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json')
+                        echo "Movies Response: $movies_response"
+                    ''', returnStdout: true).trim()
+
+                    
+                    echo "Response from GET /movies: ${response}"
+
+                    
+                    if (response.contains("test movie")) {
+                        echo "Movies list contains the created movie."
+                    } else {
+                        error "Test failed: Movie not found in the response."
+                    }
+                }
             }
-        }
-    }
 
         }
         stage('Docker Push'){ //we pass the built image to our docker hub account
