@@ -1,8 +1,8 @@
 pipeline {
 environment { // Declaration of environment variables
 DOCKER_ID = "bastienfaucher" // replace this with your docker-id
-MOVIE_SERVICE_IMAGE = "movie-service"
-CAST_SERVICE_IMAGE = "cast-service"
+MOVIE_SERVICE_IMAGE = "movie_service"
+CAST_SERVICE_IMAGE = "cast_service"
 DOCKER_TAG = "v.${BUILD_ID}.0" // we will tag our images with the current build in order to increment the value by 1 with each new build
 }
 agent any // Jenkins will be able to select all available agents
@@ -14,8 +14,8 @@ stages {
                  docker rm -f jenkins
                  docker-compose down
                  docker-compose build
-                 docker tag movie-service:latest $DOCKER_ID/$MOVIE_SERVICE_IMAGE:$DOCKER_TAG
-                 docker tag cast-service:latest $DOCKER_ID/$CAST_SERVICE_IMAGE:$DOCKER_TAG
+                 docker tag movie_service:latest $DOCKER_ID/$MOVIE_SERVICE_IMAGE:$DOCKER_TAG
+                 docker tag cast_service:latest $DOCKER_ID/$CAST_SERVICE_IMAGE:$DOCKER_TAG
                 sleep 6
                 '''
                 }
