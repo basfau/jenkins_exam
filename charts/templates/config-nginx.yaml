@@ -8,11 +8,11 @@ data:
       listen 8081;
       server_name localhost;
 
-      location /api/v1/movies/{
+      location /api/v1/movies{
         proxy_pass http://movie-service:8000/api/v1/movies;
       }
 
-      location /api/v1/casts/ {
+      location /api/v1/casts{
         proxy_pass http://cast-service:8000/api/v1/casts;
       }
     }
