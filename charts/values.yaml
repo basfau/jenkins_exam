@@ -21,19 +21,20 @@ image:
 # Variables d'environnement pour movie_service et cast_service
 env:
   movieService:
-    DATABASE_URI: "postgresql://movie_db_username:movie_db_password@movie_db/movie_db_dev"
-    CAST_SERVICE_HOST_URL: "http://cast_service:8000/api/v1/casts/"
+    DATABASE_URI: "postgresql://movie_db_username:movie_db_password@movie-db/movie_db_dev"
+    CAST_SERVICE_HOST_URL: "http://cast-service:8000/api/v1/casts/"
   castService:
-    DATABASE_URI: "postgresql://cast_db_username:cast_db_password@cast_db/cast_db_dev"
+    DATABASE_URI: "postgresql://cast_db_username:cast_db_password@cast-db/cast_db_dev"
+
 
 # Configuration du port exposé pour chaque service
 service:
   movieService:
     port: 8000
-    targetPort: 8001
+    targetPort: 8000
   castService:
     port: 8000
-    targetPort: 8002
+    targetPort: 8000
   nginx:
     port: 8081
     targetPort: 8080

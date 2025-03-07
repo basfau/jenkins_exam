@@ -14,9 +14,21 @@ spec:
     spec:
       containers:
       - name: cast-service
-        image: "{{ .Values.image.castService.repository }}:{{ .Values.image.castService.tag }}"
+        image: {{ .Values.image.castService.repository }}:{{ .Values.image.castService.tag }}
         env:
           - name: DATABASE_URI
-            value: "{{ .Values.env.castService.DATABASE_URI }}"
+            value: {{ .Values.env.castService.DATABASE_URI }}
         ports:
-          - containerPort: {{ .Values.service.castService.targetPort }}
+          - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /api/v1/casts/docs
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/casts/docs
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10

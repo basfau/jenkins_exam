@@ -9,4 +9,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.service.nginx.port }}
       targetPort: {{ .Values.service.nginx.targetPort }}
-  type: LoadBalancer
+type: NodePort

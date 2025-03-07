@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: "{{ .Values.image.postgresCast.repository }}:{{ .Values.image.postgresCast.tag }}"
+          image: {{ .Values.image.postgresCast.repository }}:{{ .Values.image.postgresCast.tag }}
           env:
             - name: POSTGRES_USER
               value: "cast_db_username"

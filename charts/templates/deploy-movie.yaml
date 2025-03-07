@@ -14,11 +14,23 @@ spec:
     spec:
       containers:
       - name: movie-service
-        image: "{{ .Values.image.movieService.repository }}:{{ .Values.image.movieService.tag }}"
+        image: {{ .Values.image.movieService.repository }}:{{ .Values.image.movieService.tag }}
         env:
           - name: DATABASE_URI
-            value: "{{ .Values.env.movieService.DATABASE_URI }}"
+            value: {{ .Values.env.movieService.DATABASE_URI }}
           - name: CAST_SERVICE_HOST_URL
-            value: "{{ .Values.env.movieService.CAST_SERVICE_HOST_URL }}"
+            value: {{ .Values.env.movieService.CAST_SERVICE_HOST_URL }}
         ports:
-          - containerPort: {{ .Values.service.movieService.targetPort }}
+          - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /api/v1/movies/docs
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/movies/docs
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
