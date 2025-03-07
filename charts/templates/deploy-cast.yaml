@@ -20,15 +20,3 @@ spec:
             value: {{ .Values.env.castService.DATABASE_URI }}
         ports:
           - containerPort: 8000
-        livenessProbe:
-          httpGet:
-            path: /api/v1/casts/docs
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /api/v1/casts/docs
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 10
