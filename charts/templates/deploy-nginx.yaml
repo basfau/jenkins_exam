@@ -16,7 +16,7 @@ spec:
       - name: nginx
         image: {{ .Values.image.nginx.repository }}:latest
         ports:
-          - containerPort: {{ .Values.service.nginx.targetPort }}
+          - containerPort: 8080
         volumeMounts:
           - name: nginx-config
             mountPath: /etc/nginx/conf.d/default.conf

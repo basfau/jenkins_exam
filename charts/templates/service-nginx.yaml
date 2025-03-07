@@ -7,6 +7,7 @@ spec:
     app: nginx
   ports:
     - protocol: TCP
-      port: {{ .Values.service.nginx.port }}
-      targetPort: {{ .Values.service.nginx.targetPort }}
-type: NodePort
+      port: 8081
+      targetPort: 8080
+      nodePort: 30001  
+  type: NodePort
