@@ -11,20 +11,15 @@ image:
     tag: latest
   nginx:
     repository: "nginx"
-  postgresMovie:
-    repository: "postgres"
-    tag: "12.1-alpine"
-  postgresCast:
-    repository: "postgres"
-    tag: "12.1-alpine"
+
 
 # Variables d'environnement pour movie_service et cast_service
 env:
   movieService:
-    DATABASE_URI: "postgresql://movie_db_username:movie_db_password@movie-db/movie_db_dev"
+    DATABASE_URI: "postgresql://movie_db_username:movie_db_password@movie-db.movie-db.svc.cluster.local:5432/movie_db_dev"
     CAST_SERVICE_HOST_URL: "http://cast-service:8000/api/v1/casts/"
   castService:
-    DATABASE_URI: "postgresql://cast_db_username:cast_db_password@cast-db/cast_db_dev"
+    DATABASE_URI: "postgresql://cast_db_username:cast_db_password@cast-db.cast-db.svc.cluster.local:5432/cast_db_dev"
 
 
 # Configuration du port exposé pour chaque service

@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: cast-db
 spec:
-  replicas: {{ .Values.replicaCount }}
+  serviceName: "cast-db"
+  replicas: 1
   selector:
     matchLabels:
       app: cast-db
@@ -13,19 +14,21 @@ spec:
         app: cast-db
     spec:
       containers:
-        - name: postgres
-          image: {{ .Values.image.postgresCast.repository }}:{{ .Values.image.postgresCast.tag }}
-          env:
-            - name: POSTGRES_USER
-              value: "cast_db_username"
-            - name: POSTGRES_PASSWORD
-              value: "cast_db_password"
-            - name: POSTGRES_DB
-              value: "cast_db_dev"
-          volumeMounts:
-            - name: cast-db-pvc
-              mountPath: /var/lib/postgresql/data
+      - name: cast-db
+        image: postgres:12.1-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: cast_db_username
+        - name: POSTGRES_PASSWORD
+          value: cast_db_password
+        - name: POSTGRES_DB
+          value: cast_db_dev
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data/
       volumes:
-        - name: cast-db-pvc
-          persistentVolumeClaim:
-            claimName: cast-db-pvc
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: cast-db-pvc
