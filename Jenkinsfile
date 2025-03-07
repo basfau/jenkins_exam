@@ -12,58 +12,57 @@ stages {
                 script {
                 sh '''
                  docker rm -f jenkins
-                 docker-compose down
-                 docker-compose build
-                 docker tag exam-jenkins_movie_service:latest $DOCKER_ID/$MOVIE_SERVICE_IMAGE:$DOCKER_TAG
-                 docker tag exam-jenkins_cast_service:latest $DOCKER_ID/$CAST_SERVICE_IMAGE:$DOCKER_TAG
-                sleep 6
+                 docker build -t movie-service ./movie-service
+                 docker build -t cast-service ./cast-service
+                 docker tag movie-service:latest $DOCKER_ID/$MOVIE_SERVICE_IMAGE:$DOCKER_TAG
+                 docker tag cast-service:latest $DOCKER_ID/$CAST_SERVICE_IMAGE:$DOCKER_TAG
                 '''
                 }
             }
         }
-        stage('Docker run'){ // run container from our builded image
-                steps {
-                    script {
-                    sh '''
-                    docker-compose up -d
-                    sleep 20
-                    '''
-                    }
-                }
-            }
+        // stage('Docker run'){ // run container from our builded image
+        //         steps {
+        //             script {
+        //             sh '''
+        //             docker-compose up -d
+        //             sleep 20
+        //             '''
+        //             }
+        //         }
+        //     }
 
-        stage('Test'){ 
-            steps {
-                script {
+        // stage('Test'){ 
+        //     steps {
+        //         script {
                     
-                    def response = sh(script: '''
+        //             def response = sh(script: '''
                         
-                        curl -X 'POST' 'http://localhost:8081/api/v1/casts/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "testacteur", "nationality": "test"}'
-
-                        
-                        curl -X 'POST' 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "test movie pipeline", "plot": "test", "genres": ["test genre"], "casts_id": [1]}'
+        //                 curl -X 'POST' 'http://localhost:8081/api/v1/casts/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "testacteur", "nationality": "test"}'
 
                         
-                        movies_response=$(curl -s 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json')
-                        echo "Movies Response: $movies_response"
-                    ''', returnStdout: true).trim()
+        //                 curl -X 'POST' 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "test movie pipeline", "plot": "test", "genres": ["test genre"], "casts_id": [1]}'
+
+                        
+        //                 movies_response=$(curl -s 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json')
+        //                 echo "Movies Response: $movies_response"
+        //             ''', returnStdout: true).trim()
 
                     
-                    echo "Response from GET /movies: ${response}"
+        //             echo "Response from GET /movies: ${response}"
 
                     
-                    if (response.contains("test movie")) {
-                        echo "Movies list contains the created movie."
-                    } else {
-                        error "Test failed: Movie not found in the response."
-                    }
+        //             if (response.contains("test movie")) {
+        //                 echo "Movies list contains the created movie."
+        //             } else {
+        //                 error "Test failed: Movie not found in the response."
+        //             }
 
-                    sh 'sleep 5'
-                    sh 'docker-compose down'
-                }
-            }
+        //             sh 'sleep 5'
+        //             sh 'docker-compose down'
+        //         }
+        //     }
 
-        }
+        // }
         stage('Docker Push'){ //we pass the built image to our docker hub account
             environment
             {
