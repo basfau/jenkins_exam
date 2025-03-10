@@ -7,10 +7,12 @@ DOCKER_TAG = "v.${BUILD_ID}.0" // we will tag our images with the current build 
 }
 agent any // Jenkins will be able to select all available agents
 stages {
-        stage('Debug') {
+stage('Debug') {
     steps {
         script {
-            echo "Current branch: ${env.BRANCH_NAME}"
+            // Essayer d'obtenir la branche depuis Git si env.BRANCH_NAME est null
+            def branch = env.BRANCH_NAME ?: sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+            echo "Current branch detected: ${branch}"
         }
     }
 }
