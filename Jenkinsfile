@@ -4,18 +4,17 @@ DOCKER_ID = "bastienfaucher" // replace this with your docker-id
 MOVIE_SERVICE_IMAGE = "movie_service"
 CAST_SERVICE_IMAGE = "cast_service"
 DOCKER_TAG = "v.${BUILD_ID}.0" // we will tag our images with the current build in order to increment the value by 1 with each new build
+BRANCH_NAME = "${GIT_BRANCH.split('/').size() > 1 ? GIT_BRANCH.split('/')[1..-1].join('/') : GIT_BRANCH}"
 }
 agent any // Jenkins will be able to select all available agents
 stages {
-stage('Debug') {
-    steps {
-        script {
-            // Essayer d'obtenir la branche depuis Git si env.BRANCH_NAME est null
-            def branch = env.BRANCH_NAME ?: sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-            echo "Current branch detected: ${branch}"
+stage('Checkout') {
+            steps {
+                script {
+                    echo "Current branch is: ${env.BRANCH_NAME}"
+                }
+            }
         }
-    }
-}
 
         stage(' Docker Build'){ 
             steps {
