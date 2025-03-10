@@ -145,6 +145,7 @@ stages {
                     }
 
 }
+}
 post { // send email when the job has failed
         // ..
         failure {
@@ -155,5 +156,4 @@ post { // send email when the job has failed
         }
         // ..
     }
-}
 }
