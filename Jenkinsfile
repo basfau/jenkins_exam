@@ -7,6 +7,14 @@ DOCKER_TAG = "v.${BUILD_ID}.0" // we will tag our images with the current build 
 }
 agent any // Jenkins will be able to select all available agents
 stages {
+        stage('Debug') {
+    steps {
+        script {
+            echo "Current branch: ${env.BRANCH_NAME}"
+        }
+    }
+}
+
         stage(' Docker Build'){ 
             steps {
                 script {
