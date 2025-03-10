@@ -7,7 +7,7 @@ DOCKER_TAG = "v.${BUILD_ID}.0" // we will tag our images with the current build 
 }
 agent any // Jenkins will be able to select all available agents
 stages {
-        stage(' Docker Build'){ // docker build image stage
+        stage(' Docker Build'){ 
             steps {
                 script {
                 sh '''
@@ -20,53 +20,10 @@ stages {
                 }
             }
         }
-        // stage('Docker run'){ // run container from our builded image
-        //         steps {
-        //             script {
-        //             sh '''
-        //             docker-compose up -d
-        //             sleep 20
-        //             '''
-        //             }
-        //         }
-        //     }
-
-        // stage('Test'){ 
-        //     steps {
-        //         script {
-                    
-        //             def response = sh(script: '''
-                        
-        //                 curl -X 'POST' 'http://localhost:8081/api/v1/casts/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "testacteur", "nationality": "test"}'
-
-                        
-        //                 curl -X 'POST' 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"name": "test movie pipeline", "plot": "test", "genres": ["test genre"], "casts_id": [1]}'
-
-                        
-        //                 movies_response=$(curl -s 'http://localhost:8081/api/v1/movies/' -H 'accept: application/json')
-        //                 echo "Movies Response: $movies_response"
-        //             ''', returnStdout: true).trim()
-
-                    
-        //             echo "Response from GET /movies: ${response}"
-
-                    
-        //             if (response.contains("test movie")) {
-        //                 echo "Movies list contains the created movie."
-        //             } else {
-        //                 error "Test failed: Movie not found in the response."
-        //             }
-
-        //             sh 'sleep 5'
-        //             sh 'docker-compose down'
-        //         }
-        //     }
-
-        // }
-        stage('Docker Push'){ //we pass the built image to our docker hub account
+        stage('Docker Push'){ 
             environment
             {
-                DOCKER_PASS = credentials("DOCKER_HUB_PASS") // we retrieve  docker password from secret text called docker_hub_pass saved on jenkins
+                DOCKER_PASS = credentials("DOCKER_HUB_PASS") 
             }
 
             steps {
@@ -86,6 +43,7 @@ stages {
                 environment
                 {
                 KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
+                NODEPORT = "30001"
                 }
                     steps {
                         script {
@@ -96,6 +54,7 @@ stages {
                         cat $KUBECONFIG > .kube/config
                         cp ./charts/values.yaml values.yml
                         sed -i 's/tag: latest/tag: "'"${DOCKER_TAG}"'"/g' values.yml
+                        sed -i 's/nodePort: .*/nodePort: "'"${NODEPORT}"'"/g' values.yml
                         cat values.yml
                         kubectl get namespace dev || kubectl create namespace dev
                         helm upgrade --install exam-jenkins ./charts --values=values.yml --namespace dev --recreate-pods
@@ -104,55 +63,86 @@ stages {
                     }
 
                 }
-//         stage('Deploiement en staging'){
-//                 environment
-//                 {
-//                 KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
-//                 }
-//                     steps {
-//                         script {
-//                         sh '''
-//                         rm -Rf .kube
-//                         mkdir .kube
-//                         ls
-//                         cat $KUBECONFIG > .kube/config
-//                         cp fastapi/values.yaml values.yml
-//                         cat values.yml
-//                         sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-//                         helm upgrade --install app fastapi --values=values.yml --namespace staging
-//                         '''
-//                         }
-//                     }
 
-//                 }
-//         stage('Deploiement en prod'){
-//                 environment
-//                 {
-//                 KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
-//                 }
-//                     steps {
-//                     // Create an Approval Button with a timeout of 15minutes.
-//                     // this require a manuel validation in order to deploy on production environment
-//                             timeout(time: 15, unit: "MINUTES") {
-//                                 input message: 'Do you want to deploy in production ?', ok: 'Yes'
-//                             }
+        stage('Deploiement en QA'){
+                environment
+                {
+                KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
+                NODEPORT = "30002"
+                }
+                    steps {
+                        script {
+                        sh '''
+                        rm -Rf .kube
+                        mkdir .kube
+                        ls
+                        cat $KUBECONFIG > .kube/config
+                        cp ./charts/values.yaml values.yml
+                        sed -i 's/tag: latest/tag: "'"${DOCKER_TAG}"'"/g' values.yml
+                        sed -i 's/nodePort: .*/nodePort: "'"${NODEPORT}"'"/g' values.yml
+                        cat values.yml
+                        kubectl get namespace qa || kubectl create namespace qa
+                        helm upgrade --install exam-jenkins ./charts --values=values.yml --namespace qa --recreate-pods
+                        '''
+                        }
+                    }
 
-//                         script {
-//                         sh '''
-//                         rm -Rf .kube
-//                         mkdir .kube
-//                         ls
-//                         cat $KUBECONFIG > .kube/config
-//                         cp fastapi/values.yaml values.yml
-//                         cat values.yml
-//                         sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-//                         helm upgrade --install app fastapi --values=values.yml --namespace prod
-//                         '''
-//                         }
-//                     }
+                }
 
-//                 }
+        stage('Deploiement en staging'){
+                environment
+                {
+                KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
+                NODEPORT = "30003"
+                }
+                    steps {
+                        script {
+                        sh '''
+                        rm -Rf .kube
+                        mkdir .kube
+                        ls
+                        cat $KUBECONFIG > .kube/config
+                        cp ./charts/values.yaml values.yml
+                        sed -i 's/tag: latest/tag: "'"${DOCKER_TAG}"'"/g' values.yml
+                        sed -i 's/nodePort: .*/nodePort: "'"${NODEPORT}"'"/g' values.yml
+                        cat values.yml
+                        kubectl get namespace staging || kubectl create namespace staging
+                        helm upgrade --install exam-jenkins ./charts --values=values.yml --namespace staging --recreate-pods
+                        '''
+                        }
+                    }
 
+                }
+
+        stage('Deploiement en prod manuel'){
+                when { 
+                    expression { env.BRANCH_NAME == 'master' }
+                }
+                environment
+                {
+                KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
+                NODEPORT = "30004"
+                }
+                    steps {
+                        timeout(time: 15, unit: "MINUTES") {
+                        input message: 'Do you want to deploy in production ?', ok: 'Yes'
+                        }
+
+                        script {
+                        sh '''
+                        rm -Rf .kube
+                        mkdir .kube
+                        ls
+                        cat $KUBECONFIG > .kube/config
+                        cp ./charts/values.yaml values.yml
+                        sed -i 's/tag: latest/tag: "'"${DOCKER_TAG}"'"/g' values.yml
+                        sed -i 's/nodePort: .*/nodePort: "'"${NODEPORT}"'"/g' values.yml
+                        cat values.yml
+                        kubectl get namespace prod || kubectl create namespace prod
+                        helm upgrade --install exam-jenkins ./charts --values=values.yml --namespace prod --recreate-pods
+                        '''
+                        }
+                    }
 
 }
 post { // send email when the job has failed

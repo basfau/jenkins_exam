@@ -30,6 +30,11 @@ service:
   castService:
     port: 8000
     targetPort: 8000
+  nginx:
+    port: 80
+    targetPort: 8081
+    nodePort: 30001 
+  
 
 persistence:
   movieDb:
